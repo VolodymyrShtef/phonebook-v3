@@ -6,7 +6,7 @@ import Table from "react-bootstrap/Table";
 import Container from "react-bootstrap/Container";
 
 import { connect } from "react-redux";
-// https://phonebookv3.netlify.app/
+
 function ShowFav({ contacts }) {
   const markup = contacts.map((contact) => (
     <TableItem key={contact.id} item={contact} />
