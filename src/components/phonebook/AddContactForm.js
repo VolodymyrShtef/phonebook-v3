@@ -4,10 +4,13 @@ import ContactInputForm from "./ContactInputForm";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 
-export default class AddContactForm extends Component {
+import { connect } from "react-redux";
+import phbActions from "../../redux/phonebook/phbActions";
+
+class AddContactForm extends Component {
   state = {
     name: "",
-    tel: "",
+    phone: "",
     email: "",
   };
 
@@ -17,9 +20,18 @@ export default class AddContactForm extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    if (this.state.name && this.state.tel)
-      this.props.onAddContact(this.state, this.props.history);
-    else alert("Fields with * required");
+    if (!this.state.name || !this.state.phone) {
+      alert("Fields with * required");
+      return;
+    }
+    if (
+      this.props.contacts.find((contact) => contact.phone === this.state.phone)
+    ) {
+      alert("Contact with entered phone number already exists");
+      return;
+    }
+    this.props.onAddContact(this.state);
+    this.props.history.push("/");
   };
 
   render() {
@@ -43,3 +55,10 @@ export default class AddContactForm extends Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  contacts: state.contacts.items,
+});
+const mDTP = {
+  onAddContact: phbActions.addContact,
+};
+export default connect(mapStateToProps, mDTP)(AddContactForm);

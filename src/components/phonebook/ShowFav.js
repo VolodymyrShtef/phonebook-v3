@@ -1,22 +1,24 @@
 import React from "react";
-import { v4 as uuidv4 } from "uuid";
 import { Link } from "react-router-dom";
+
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import Container from "react-bootstrap/Container";
 
-export default function ShowFav({ contacts }) {
+import { connect } from "react-redux";
+
+function ShowFav({ contacts }) {
   const markup = contacts.map((contact) => (
-    <TableItem key={uuidv4()} item={contact} />
+    <TableItem key={contact.id} item={contact} />
   ));
 
   function TableItem({ item }) {
-    const { Name, Phone, Email } = item;
+    const { name, phone, email } = item;
     return (
       <tr>
-        <td>{Name}</td>
-        <td>{Phone}</td>
-        <td>{Email}</td>
+        <td>{name}</td>
+        <td>{phone}</td>
+        <td>{email}</td>
       </tr>
     );
   }
@@ -26,12 +28,12 @@ export default function ShowFav({ contacts }) {
       <h2>Favourite Contacts</h2>
       <Container className="flex_container_spased custom_wrapper">
         <Link to="/addnewcontact">
-          <Button variant="primary" size="lg">
+          <Button variant="primary" size="lg" className="button_with_marginR">
             Add new contact
           </Button>
         </Link>
         <Link to="/">
-          <Button variant="primary" size="lg">
+          <Button variant="primary" size="lg" className="button_with_marginL">
             Show all
           </Button>
         </Link>
@@ -51,3 +53,12 @@ export default function ShowFav({ contacts }) {
     </>
   );
 }
+
+const mapStateToProps = (state) => {
+  const favContacts = state.contacts.items.filter(
+    (contact) => contact.favourite
+  );
+  return { contacts: favContacts };
+};
+
+export default connect(mapStateToProps)(ShowFav);

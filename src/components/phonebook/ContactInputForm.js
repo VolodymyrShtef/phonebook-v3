@@ -9,7 +9,7 @@ export default function ContactInputForm({
   handleSubmit,
   handleChange,
 }) {
-  const { name, tel, email } = state;
+  const { name, phone, email } = state;
   return (
     <Container className="add_contact_wrapper">
       <form onSubmit={handleSubmit}>
@@ -24,7 +24,7 @@ export default function ContactInputForm({
           <InputGroup.Prepend>
             <InputGroup.Text className="input_label">Phone *</InputGroup.Text>
           </InputGroup.Prepend>
-          <Form.Control name="tel" defaultValue={tel} />
+          <Form.Control name="phone" defaultValue={phone} />
         </InputGroup>
 
         <InputGroup type="email" className="mb-3" onChange={handleChange}>

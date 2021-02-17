@@ -4,23 +4,30 @@ import ContactInputForm from "./ContactInputForm";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 
-export default class EditContactForm extends Component {
+import { connect } from "react-redux";
+import phbActions from "../../redux/phonebook/phbActions";
+
+class EditContactForm extends Component {
   state = {
     name: "",
-    tel: "",
+    phone: "",
     email: "",
   };
   componentDidMount() {
     if (!this.props.editID) {
       this.props.history.push("/");
-    } else {
-      const { name, tel, email } = this.props.contactProps;
-      this.setState({
-        name: name,
-        tel: tel,
-        email: email,
-      });
+      return;
     }
+
+    const editingContact = this.props.contacts.find(
+      (contact) => contact.id === this.props.editID
+    );
+    const { name, phone, email } = editingContact;
+    this.setState({
+      name: name,
+      phone: phone,
+      email: email,
+    });
   }
 
   handleChange = (e) => {
@@ -29,9 +36,34 @@ export default class EditContactForm extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    if (this.state.name && this.state.tel)
-      this.props.onEditContact(this.state, this.props.history);
-    else alert("Fields with * required");
+    if (!this.state.name || !this.state.phone) {
+      alert("Fields with * required");
+      return;
+    }
+    if (
+      this.props.contacts.find(
+        (contact) =>
+          contact.phone === this.state.phone && contact.id !== this.props.editID
+      )
+    ) {
+      alert("Contact with entered phone number already exists");
+      return;
+    }
+
+    const updatedContacts = this.props.contacts.map((contact) =>
+      contact.id === this.props.editID
+        ? {
+            name: this.state.name,
+            phone: this.state.phone,
+            email: this.state.email,
+            id: contact.id,
+            favourite: contact.favourite,
+          }
+        : { ...contact }
+    );
+    this.props.onAcceptChanges(updatedContacts);
+    this.props.resetEditID("");
+    this.props.history.push("/");
   };
 
   render() {
@@ -55,3 +87,12 @@ export default class EditContactForm extends Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  editID: state.contacts.editID,
+  contacts: state.contacts.items,
+});
+const mDTP = {
+  onAcceptChanges: phbActions.editContact,
+  resetEditID: phbActions.changeEditID,
+};
+export default connect(mapStateToProps, mDTP)(EditContactForm);
