@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import ContactInputForm from "./ContactInputForm";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -34,16 +33,21 @@ class AddContactForm extends Component {
     this.props.history.push("/");
   };
 
+  handleBack = () => this.props.history.push("/");
+
   render() {
     return (
       <>
         <Container className="flex_container">
           <h2 className="new_contact_title">New Contact</h2>
-          <Link to="/" className="back_button">
-            <Button variant="outline-primary" type="button">
-              Back
-            </Button>
-          </Link>
+          <Button
+            onClick={this.handleBack}
+            className="back_button"
+            variant="outline-primary"
+            type="button"
+          >
+            Back
+          </Button>
         </Container>
 
         <ContactInputForm

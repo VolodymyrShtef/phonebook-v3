@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import Container from "react-bootstrap/Container";
@@ -7,31 +6,26 @@ import Container from "react-bootstrap/Container";
 import { connect } from "react-redux";
 import phbActions from "../../redux/phonebook/phbActions";
 
-function ContactsList({ contacts, onDeleteItem, onChangeEditID, onToogleFav }) {
-  const addToFavToggle = (e) => {
-    const idFavToggle = e.target.id;
-    const updatedContacts = contacts.map((contact) =>
-      contact.id === idFavToggle
-        ? {
-            ...contact,
-            favourite: !contact.favourite,
-          }
-        : { ...contact }
-    );
-    onToogleFav(updatedContacts);
-  };
-
+function ContactsList({
+  contacts,
+  onDeleteItem,
+  onChangeEditID,
+  onToogleFav,
+  history,
+}) {
   const markup = contacts.map((contact) => (
-    <TableItem
-      key={contact.id}
-      item={contact}
-      onDeleteItem={onDeleteItem}
-      onChangeEditID={onChangeEditID}
-      onAddToFavToggle={addToFavToggle}
-    />
+    <TableItem key={contact.id} item={contact} onDeleteItem={onDeleteItem} />
   ));
 
-  function TableItem({ item, onDeleteItem, onChangeEditID, onAddToFavToggle }) {
+  function handleEditClick(editID) {
+    onChangeEditID(editID);
+    history.push("/editcontact");
+  }
+  function handleButtonsClick(goTo) {
+    history.push(goTo);
+  }
+
+  function TableItem({ item, onDeleteItem, history }) {
     const { name, phone, email, favourite } = item;
     return (
       <tr>
@@ -45,23 +39,21 @@ function ContactsList({ contacts, onDeleteItem, onChangeEditID, onToogleFav }) {
               className="manage_fav_button button_with_marginR"
               size="sm"
               type="button"
-              onClick={onAddToFavToggle}
+              onClick={() => onToogleFav(item.id)}
               id={item.id}
             >
               {favourite ? "Out of favourites" : "Add to favourites"}
             </Button>
 
-            <Link to="/editcontact">
-              <Button
-                className="button_with_marginR button_with_marginL"
-                variant="secondary"
-                type="button"
-                onClick={() => onChangeEditID(item.id)}
-                id={item.id}
-              >
-                Edit
-              </Button>
-            </Link>
+            <Button
+              className="button_with_marginR button_with_marginL"
+              variant="secondary"
+              type="button"
+              onClick={() => handleEditClick(item.id)}
+              id={item.id}
+            >
+              Edit
+            </Button>
 
             <Button
               className="button_with_marginL"
@@ -82,16 +74,22 @@ function ContactsList({ contacts, onDeleteItem, onChangeEditID, onToogleFav }) {
     <>
       <h2>Contacts List</h2>
       <Container className="flex_container_spased custom_wrapper">
-        <Link to="/addnewcontact">
-          <Button variant="primary" size="lg" className="button_with_marginR">
-            Add new contact
-          </Button>{" "}
-        </Link>
-        <Link to="/showfavourites">
-          <Button variant="primary" size="lg" className="button_with_marginL">
-            Show favourites
-          </Button>{" "}
-        </Link>
+        <Button
+          onClick={() => handleButtonsClick("/addnewcontact")}
+          variant="primary"
+          size="lg"
+          className="button_with_marginR"
+        >
+          Add new contact
+        </Button>{" "}
+        <Button
+          onClick={() => handleButtonsClick("/showfavourites")}
+          variant="primary"
+          size="lg"
+          className="button_with_marginL"
+        >
+          Show favourites
+        </Button>{" "}
       </Container>
 
       <Table
